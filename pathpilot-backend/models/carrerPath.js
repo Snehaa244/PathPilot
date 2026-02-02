@@ -12,6 +12,7 @@ const careerPathSchema = new mongoose.Schema({
     type: String,
     enum: ["beginner", "intermediate", "advanced"],
   },
+  
 
   estimatedTime: String, // e.g. "6 months"
 
@@ -24,6 +25,10 @@ const careerPathSchema = new mongoose.Schema({
     },
   ],
 
+  goals: {
+  type: [String],
+  enum: ["job", "internship", "switch"],
+},
   createdAt: {
     type: Date,
     default: Date.now,

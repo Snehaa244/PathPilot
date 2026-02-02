@@ -1,8 +1,26 @@
 const CareerPath = require("../models/CareerPath");
 const Roadmap = require("../models/Roadmap");
 
+/* ===== HELPERS ===== */
+
+const getSkillsPerWeek = (experienceLevel) => {
+  if (experienceLevel === "beginner") return 2;
+  if (experienceLevel === "intermediate") return 3;
+  if (experienceLevel === "advanced") return 5;
+  return 3;
+};
+
+const getMilestone = (weekNumber) => {
+  if (weekNumber <= 2) return "Foundations";
+  if (weekNumber <= 5) return "Core Skills";
+  if (weekNumber <= 7) return "Projects";
+  return "Advanced & Interview Prep";
+};
+
+/* ===== MAIN GENERATOR ===== */
+
 const generateRoadmapForUser = async (user) => {
-  //  Match career path based on interest + experience
+  //  Match career path
   const careerPath = await CareerPath.findOne({
     interests: { $in: user.interests },
     difficulty: user.experienceLevel,
@@ -12,15 +30,26 @@ const generateRoadmapForUser = async (user) => {
     throw new Error("No suitable career path found");
   }
 
-  //  Split skills into weeks
-  const skillsPerWeek = 3;
+  //  Remove already known skills
+  const userSkillIds = user.currentSkills.map((id) => id.toString());
+
+  const filteredSkills = careerPath.skillsRequired.filter(
+    (skill) => !userSkillIds.includes(skill._id.toString())
+  );
+
+  //  Difficulty-based pacing
+  const skillsPerWeek = getSkillsPerWeek(user.experienceLevel);
   const weeks = [];
 
-  for (let i = 0; i < careerPath.skillsRequired.length; i += skillsPerWeek) {
+  //  Split into weeks + milestones
+  for (let i = 0; i < filteredSkills.length; i += skillsPerWeek) {
+    const weekNumber = weeks.length + 1;
+
     weeks.push({
-      week: weeks.length + 1,
-      title: `Week ${weeks.length + 1}`,
-      skills: careerPath.skillsRequired.slice(i, i + skillsPerWeek),
+      week: weekNumber,
+      milestone: getMilestone(weekNumber),
+      title: `Week ${weekNumber}`,
+      skills: filteredSkills.slice(i, i + skillsPerWeek),
     });
   }
 
