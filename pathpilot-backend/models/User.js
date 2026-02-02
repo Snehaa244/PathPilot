@@ -2,21 +2,17 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    select: false,
-  },
+  name: String,
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true, select: false },
+  education: String,
+  experienceLevel: String,
+  interests: [String],
+  currentSkills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
+  goal: String,
+  selectedCareerPath: { type: mongoose.Schema.Types.ObjectId, ref: 'CareerPath' },
   refreshToken: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  }
+  createdAt: { type: Date, default: Date.now },
 });
 
 // FIXED PRE-SAVE
