@@ -1,22 +1,53 @@
 const User = require("../models/User.model");
 
+
+
 /**
- * GET /api/user/me
- * Get logged-in user profile
+ * Complete user onboarding
  */
-const getMyProfile = async (req, res) => {
+const completeOnboarding = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password -refreshToken");
+    const userId = req.user.userId;
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const {
+      role,
+      education,
+      experienceLevel,
+      interests,
+      goal,
+    } = req.body;
 
-    res.json(user);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        role,
+        education,
+        experienceLevel,
+        interests,
+        goal,
+        onboardingCompleted: true,
+      },
+      { new: true }
+    );
+
+    res.json({
+      message: "Onboarding completed successfully",
+      user,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+const getMyProfile = async (req, res) => {
+  const user = await User.findById(req.user.userId)
+    .select("-password -refreshToken")
+    .populate("currentSkills")
+    .populate("selectedCareerPath");
+
+  res.json(user);
+};
+
 
 /**
  * PUT /api/user/me
@@ -41,4 +72,5 @@ const updateMyProfile = async (req, res) => {
 module.exports = {
   getMyProfile,
   updateMyProfile,
+  completeOnboarding
 };

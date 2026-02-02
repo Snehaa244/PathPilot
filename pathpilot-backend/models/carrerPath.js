@@ -1,11 +1,33 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const careerPathSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String },
-  difficulty: { type: String },
-  estimatedTime: { type: String },
-  skillsRequired: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
+  title: {
+    type: String,
+    required: true,
+  },
+
+  description: String,
+
+  difficulty: {
+    type: String,
+    enum: ["beginner", "intermediate", "advanced"],
+  },
+
+  estimatedTime: String, // e.g. "6 months"
+
+  interests: [String], // used for matching
+
+  skillsRequired: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Skill",
+    },
+  ],
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('CareerPath', careerPathSchema);
+module.exports = mongoose.model("CareerPath", careerPathSchema);

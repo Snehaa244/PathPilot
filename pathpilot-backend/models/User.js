@@ -5,8 +5,17 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
+  role: {
+    type: String,
+    enum: ["student", "professional"],
+  },
+
   education: String,
-  experienceLevel: String,
+
+  experienceLevel: {
+    type: String,
+    enum: ["beginner", "intermediate", "advanced"],
+  },
   interests: [String],
   currentSkills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }],
   goal: String,
