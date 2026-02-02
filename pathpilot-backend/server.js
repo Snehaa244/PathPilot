@@ -34,6 +34,7 @@ app.use(cors({
 
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
+app.use("/api/roadmap", require("./routes/roadmapRoutes"));
 
 // app.use('/api/user', require('./routes/userRoutes'));
 
